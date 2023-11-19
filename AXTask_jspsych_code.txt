@@ -1,0 +1,1205 @@
+var timeline = [];
+
+        // combine trial information from the ambiguous word and filler arrays to use in the main task
+        var main_trial_info = amb_trial_info_v1;
+        var main_trial_info2 = amb_trial_info_v2;
+
+        // create list of all audio files for preloading
+        var all_audio = [];
+        for (var i=0; i<practice_trial_info.length; i++) {
+            all_audio.push(practice_trial_info[i].target_audio1);
+        }
+        for (var i=0; i<main_trial_info.length; i++) {
+            all_audio.push(main_trial_info[i].target_audio);
+        }
+        for (var i=0; i<main_trial_info2.length; i++) {
+            all_audio.push(main_trial_info2[i].target_audio);
+        }
+        
+         
+        var instructions1 = {
+            type: 'instructions',
+            pages: [`<p>Dobrodošli u fazu vežbanja!</p>` + 
+            `<p>U ovom delu eksperimenta slušaæete audio zapise izgovorenih reèi koje mogu biti iste ili razlièite.</p>`+
+            `<p>Ako mislite da su reèi iste, pritisnite <b>[A]</b> na vašoj tastaturi.</p>`+
+            `<p>Ako mislite da su reèi razlièite, pritisnite <b>[L]</b> na vašoj tastaturi.</p>`, 
+            `<p>Èuæete audio zapis dveju reèi koje su <strong>iste</strong>. Nakon što se audio zapis završi, pritisnite <strong>[A]</strong> na tastaturi.</p>`,
+            ],
+            show_clickable_nav: true,
+              post_trial_gap: 1000
+        };
+        timeline.push(instructions1);
+        
+        
+        var instructions4 = {
+            type: 'audio-keyboard-response',
+            stimulus: 'sound/FolijaLF_LF.wav',
+            prompt: '<span style="font-size:40px;">+</span>',
+  choices: ['a'],
+  response_allowed_while_playing: false,
+  post_trial_gap: 1000
+        };
+        timeline.push(instructions4);
+        
+        var instructions5 = {
+            type: 'html-button-response',
+            stimulus: `<p>Odlièno!</p>`+ 
+            `<p>Èuæete audio zapis dveju reèi koje su <strong>razlièite</strong>. Nakon što se audio zapis završi, pritisnite <strong>[L]</strong> na tastaturi.</p>`,
+  choices: ['Može'],
+  post_trial_gap: 1000
+        };
+        timeline.push(instructions5);
+        
+        var instructions6 = {
+            type: 'audio-keyboard-response',
+            stimulus: 'sound/FolijaLF_LR.wav',
+            prompt: '<span style="font-size:40px;">+</span>',
+  choices: ['l'],
+  response_allowed_while_playing: false,
+  post_trial_gap: 1000
+        };
+        timeline.push(instructions6);
+        
+        var instructions7 = {
+            type: 'html-button-response',
+            stimulus: `<p>Hvala!</p>`+
+            `<p>Sada æete èuti 10 uzastopnih audio zapisa. Nakon svakog audio zapisa, odredite da li su reèi iste ili razlièite.</p>`+
+`<p>Ukoliko su <b>iste</b>, pritisnite <b>[A]</b>.</p>`+
+`<p>Ukoliko su <b>razlièite</b>, pritisnite <b>[L]</b>.</p>`+ 
+`<p>Kad budete spremni, kliknite na "Poèni".</p>`,  
+  choices: ['Poèni'],
+  post_trial_gap: 1000
+        };
+        timeline.push(instructions7);
+
+        
+        var probe1 = {
+            type: 'audio-keyboard-response',
+            stimulus: jsPsych.timelineVariable('probe1'),
+            choices: ['a','l'],
+            response_allowed_while_playing: false,
+            trial_ends_after_audio: false,
+            response_ends_trial: true,
+            prompt: '<span style="font-size:40px;">+</span>',
+            data: {
+                probe1: jsPsych.timelineVariable('probe1'),
+                correct_response1: jsPsych.timelineVariable('correct_response1'),
+           trial_part: 'probe1'
+            }, 
+            on_finish: function(data) {
+                var acc = false;
+                if (jsPsych.pluginAPI.compareKeys(data.correct_response1, data.response)) {
+                    acc = true;
+                }
+               data.accuracy = acc;
+            }
+        };
+  
+        var feedback = {
+            type: 'html-keyboard-response',
+            stimulus: function() {
+                var feedback_text = '<span style="color:red;font-size:30px;">Netaèno.</span>';
+                var last_resp_acc = jsPsych.data.getLastTrialData().values()[0].accuracy;
+                if (last_resp_acc == true) {
+                    feedback_text = '<span style="color:green;font-size:30px;">Taèno!</span>'
+                }
+                return feedback_text;
+            },
+            choices: jsPsych.NO_KEYS,
+            trial_duration: 2000
+        };
+
+        var prac_procedure = {
+            timeline: [probe1, feedback],
+            timeline_variables: practice_trial_info,
+            randomize_order: true
+        };
+        timeline.push(prac_procedure);
+         
+
+        var instructions8 = {
+            type: 'instructions',
+            pages: [`<p>Odlièno! Uspešno ste završili vežbanje.</p>`+
+            `<p>U nastavku æete èuti 80 parova reèi koje izgovaraju dve osobe, jedna ženskog i jedna muškog pola.</p>`+
+            `<p>U ovom delu eksperimenta neæete videti da li ste odgovorili taèno ili netaèno. Neæete dobiti povratnu informaciju. </p>`,
+            `<p>Ukoliko ne pritisnete [A] ili [L] u roku od tri sekunde, automatski æete preæi na sledeæi par. </p>`,
+           `<p> Zapamtite </p>`+
+           `<p><b>[A] = isti</b></p>`+
+           `<p><b>[L] = razlièiti</b></p>`+
+            `<p> Ukoliko ste spremni, kliknite 'Dalje'.</p>`,
+            ],
+            show_clickable_nav: true,
+            response_ends_trial: true
+        }
+        timeline.push(instructions8);
+
+        
+        var instructions8_1= {
+            type: 'audio-keyboard-response',
+            stimulus: 'sound/SeloLF_LF.wav',
+            prompt: '<span style="font-size:40px;">+</span>',
+  choices: ['a','l'],
+  response_allowed_while_playing: false,
+  post_trial_gap: 500
+        };
+        timeline.push(instructions8_1);
+        
+        var instructions8_2= {
+            type: 'audio-keyboard-response',
+            stimulus: 'sound/SeniorSF_LF.wav',
+            prompt: '<span style="font-size:40px;">+</span>',
+  choices: ['a','l'],
+  response_allowed_while_playing: false,
+  post_trial_gap: 500
+        };
+        timeline.push(instructions8_2);
+        
+        var probe = {
+            type: 'audio-keyboard-response',
+            stimulus: jsPsych.timelineVariable('main_probe'),
+            choices: ['a','l'],
+            response_allowed_while_playing: false,
+            trial_ends_after_audio: false,
+            response_ends_trial: true,
+             post_trial_gap: 500,
+            trial_duration: 4000,
+            prompt: '<span style="font-size:40px;">+</span>',
+            data: {
+                main_probe: jsPsych.timelineVariable('main_probe'),
+                
+                main_correct_response: jsPsych.timelineVariable('main_correct_response'),
+            }, 
+            on_finish: function(data) {
+                var acc = false;
+                if (jsPsych.pluginAPI.compareKeys(data.main_correct_response, data.response)) {
+                    acc = true;
+                }
+                data.accuracy = acc;
+            }
+        };
+
+        var main_procedure = {
+            timeline: [probe],
+            timeline_variables: main_trial_info,
+            randomize_order: true,
+        };
+        timeline.push(main_procedure);
+        
+        var pause = {
+            type: 'html-button-response',
+            stimulus: `<p>Odlièno! Uspešno ste završili prvi deo eksperimenta. Napravite kratku pauzu, osvežite se, i krenite sa drugim delom.</p>`+
+            `<p>U nastavku æete èuti 80 drugih parova reèi.</p>`+
+            `<p> Ukoliko ste spremni, kliknite 'Poèni' da biste poèeli.</p>`,
+            choices: ['Poèni'],
+            response_ends_trial: true
+        }
+        timeline.push(pause);
+        
+        var instructions9_1= {
+            type: 'audio-keyboard-response',
+            stimulus: 'sound/SeniorSR_SR.wav',
+            prompt: '<span style="font-size:40px;">+</span>',
+  choices: ['a','l'],
+  response_allowed_while_playing: false,
+  post_trial_gap: 500
+        };
+        timeline.push(instructions9_1);
+        
+        var instructions9_2= {
+            type: 'audio-keyboard-response',
+            stimulus: 'sound/SeloSR_LF.wav',
+            prompt: '<span style="font-size:40px;">+</span>',
+  choices: ['a','l'],
+  response_allowed_while_playing: false,
+  post_trial_gap: 500
+        };
+        timeline.push(instructions9_2);
+        
+        
+        var probe2 = {
+            type: 'audio-keyboard-response',
+            stimulus: jsPsych.timelineVariable('main_probe2'),
+            choices: ['a','l'],
+            response_allowed_while_playing: false,
+            trial_ends_after_audio: false,
+            response_ends_trial: true,
+            post_trial_gap: 500,
+            trial_duration: 4000,
+            prompt: '<span style="font-size:40px;">+</span>',
+            data: {
+                main_probe2: jsPsych.timelineVariable('main_probe2'),
+                
+                main_correct_response2: jsPsych.timelineVariable('main_correct_response2'),
+            }, 
+            on_finish: function(data) {
+                var acc = false;
+                if (jsPsych.pluginAPI.compareKeys(data.main_correct_response2, data.response)) {
+                    acc = true;
+                }
+                data.accuracy = acc;
+            }
+        };
+
+        var main_procedure2 = {
+            timeline: [probe2],
+            timeline_variables: main_trial_info2,
+            randomize_order: true,
+        };
+        timeline.push(main_procedure2);
+        
+var instructions10 = {
+            type: 'instructions',
+           pages: [ `<p>Hvala na uradjenom!</p>` + 
+            `<p>Ovo je poslednji deo eksperimenta.</p>`+
+            `<p>Èuæete jednu reè dva puta. Vaš zadatak je da odredite koji akcenat nosi ta reè.</p>`,
+             `<p>Kao što znate, u srpskom jeziku postoje èetiri akcenata:</p>`+
+            `<p><b>dugosilazni</b></p>`+
+            `<p><b>dugouzlazni</b></p>`+
+            `<p><b>kratkosilazni</b></p>`+
+            `<p><b>kratkouzlazni</b></p>`+
+            `<p>Nakon što èujete reè, selektovaæete jedan od akcenata</p>`,
+             ],
+             show_clickable_nav: true,
+              post_trial_gap: 1000
+        };
+        timeline.push(instructions10);
+      
+        
+var instructions12 = {
+            type: 'audio-button-response',
+            stimulus: 'sound/SeloLR.wav',
+  choices: ['Pusti ponovo'],
+  response_allowed_while_playing: false,
+  post_trial_gap: 1000
+        };
+        timeline.push(instructions12);
+        
+      var instructions13 = {
+            type: 'audio-keyboard-response',
+            stimulus: 'sound/SeloLR.wav',
+  response_allowed_while_playing: false,
+  trial_duration: 2000,
+        };
+        timeline.push(instructions13);
+        
+  var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+  var first_block = {
+    type: 'survey-multi-choice',
+    questions: [
+      {prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+          ],
+  };
+  timeline.push(first_block);
+
+var instructions12 = {
+            type: 'audio-button-response',
+            stimulus: 'sound/JavanLF.wav',
+  choices: ['Pusti ponovo'],
+  response_allowed_while_playing: false,
+  post_trial_gap: 1000
+        };
+        timeline.push(instructions12);
+        
+      var instructions13 = {
+            type: 'audio-keyboard-response',
+            stimulus: 'sound/JavanLF.wav',
+  response_allowed_while_playing: false,
+  trial_duration: 2000,
+        };
+        timeline.push(instructions13);
+        
+  var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+  var first_block = {
+    type: 'survey-multi-choice',
+    questions: [
+      {prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+          ],
+  };
+  timeline.push(first_block);
+
+
+  var instructions12 = {
+    type: 'audio-button-response',
+    stimulus: 'sound/FTunikaLR.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+    type: 'audio-keyboard-response',
+    stimulus: 'sound/FTunikaLR.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+  ],
+};
+timeline.push(first_block);
+
+var instructions12 = {
+    type: 'audio-button-response',
+    stimulus: 'sound/SolidanLR.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+    type: 'audio-keyboard-response',
+    stimulus: 'sound/SolidanLR.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+  ],
+};
+timeline.push(first_block);
+
+
+var instructions12 = {
+type: 'audio-button-response',
+stimulus: 'sound/KumaSF.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+type: 'audio-keyboard-response',
+stimulus: 'sound/KumaSF.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+],
+};
+timeline.push(first_block);
+
+var instructions12 = {
+    type: 'audio-button-response',
+    stimulus: 'sound/MirisSR.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+    type: 'audio-keyboard-response',
+    stimulus: 'sound/MirisSR.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+  ],
+};
+timeline.push(first_block);
+
+
+var instructions12 = {
+type: 'audio-button-response',
+stimulus: 'sound/MalinaLF.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+type: 'audio-keyboard-response',
+stimulus: 'sound/MalinaLF.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+],
+};
+timeline.push(first_block);
+
+var instructions12 = {
+    type: 'audio-button-response',
+    stimulus: 'sound/JavanSR.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+    type: 'audio-keyboard-response',
+    stimulus: 'sound/JavanSR.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+  ],
+};
+timeline.push(first_block);
+
+
+var instructions12 = {
+type: 'audio-button-response',
+stimulus: 'sound/TunikaLF.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+type: 'audio-keyboard-response',
+stimulus: 'sound/TunikaLF.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+],
+};
+timeline.push(first_block);
+
+var instructions12 = {
+type: 'audio-button-response',
+stimulus: 'sound/ProjaLR.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+type: 'audio-keyboard-response',
+stimulus: 'sound/ProjaLR.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+],
+};
+timeline.push(first_block);
+
+
+var instructions12 = {
+type: 'audio-button-response',
+stimulus: 'sound/LinijaSF.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+type: 'audio-keyboard-response',
+stimulus: 'sound/LinijaSF.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+],
+};
+timeline.push(first_block);
+
+var instructions12 = {
+type: 'audio-button-response',
+stimulus: 'sound/FJavanLR.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+type: 'audio-keyboard-response',
+stimulus: 'sound/FJavanLR.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+],
+};
+timeline.push(first_block);
+
+
+var instructions12 = {
+type: 'audio-button-response',
+stimulus: 'sound/FProjaSR.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+type: 'audio-keyboard-response',
+stimulus: 'sound/FProjaSR.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+],
+};
+timeline.push(first_block);
+
+var instructions12 = {
+    type: 'audio-button-response',
+    stimulus: 'sound/FLinijaLF.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+    type: 'audio-keyboard-response',
+    stimulus: 'sound/FLinijaLF.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+  ],
+};
+timeline.push(first_block);
+
+
+var instructions12 = {
+type: 'audio-button-response',
+stimulus: 'sound/FMalinaSF.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+type: 'audio-keyboard-response',
+stimulus: 'sound/FMalinaSF.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+],
+};
+timeline.push(first_block);
+
+var instructions12 = {
+type: 'audio-button-response',
+stimulus: 'sound/FMirisLR.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+type: 'audio-keyboard-response',
+stimulus: 'sound/FMirisLR.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+],
+};
+timeline.push(first_block);
+
+
+var instructions12 = {
+type: 'audio-button-response',
+stimulus: 'sound/KumaLR.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+type: 'audio-keyboard-response',
+stimulus: 'sound/KumaLR.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+],
+};
+timeline.push(first_block);
+
+var instructions12 = {
+type: 'audio-button-response',
+stimulus: 'sound/FTunikaSF.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+type: 'audio-keyboard-response',
+stimulus: 'sound/FTunikaSF.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+],
+};
+timeline.push(first_block);
+
+
+var instructions12 = {
+type: 'audio-button-response',
+stimulus: 'sound/FSolidanSR.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+type: 'audio-keyboard-response',
+stimulus: 'sound/FSolidanSR.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+],
+};
+timeline.push(first_block);
+
+var instructions12 = {
+    type: 'audio-button-response',
+    stimulus: 'sound/FSolidanLF.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+    type: 'audio-keyboard-response',
+    stimulus: 'sound/FSolidanLF.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+  ],
+};
+timeline.push(first_block);
+
+
+var instructions12 = {
+type: 'audio-button-response',
+stimulus: 'sound/MalinaSR.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+type: 'audio-keyboard-response',
+stimulus: 'sound/MalinaSR.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+],
+};
+timeline.push(first_block);
+
+var instructions12 = {
+type: 'audio-button-response',
+stimulus: 'sound/FMirisSF.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+type: 'audio-keyboard-response',
+stimulus: 'sound/FMirisSF.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+],
+};
+timeline.push(first_block);
+
+
+var instructions12 = {
+type: 'audio-button-response',
+stimulus: 'sound/FProjaLF.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+type: 'audio-keyboard-response',
+stimulus: 'sound/FProjaLF.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+],
+};
+timeline.push(first_block);
+
+var instructions12 = {
+type: 'audio-button-response',
+stimulus: 'sound/FLinijaSR.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+type: 'audio-keyboard-response',
+stimulus: 'sound/FLinijaSR.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+],
+};
+timeline.push(first_block);
+
+
+var instructions12 = {
+type: 'audio-button-response',
+stimulus: 'sound/FKumaLF.wav',
+choices: ['Pusti ponovo'],
+response_allowed_while_playing: false,
+post_trial_gap: 1000
+};
+timeline.push(instructions12);
+
+var instructions13 = {
+type: 'audio-keyboard-response',
+stimulus: 'sound/FKumaLF.wav',
+response_allowed_while_playing: false,
+trial_duration: 2000,
+};
+timeline.push(instructions13);
+
+var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+
+var first_block = {
+type: 'survey-multi-choice',
+questions: [
+{prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+],
+};
+timeline.push(first_block);
+
+var instructions12 = {
+    type: 'audio-button-response',
+    stimulus: 'sound/FJavanSF.wav',
+    choices: ['Pusti ponovo'],
+    response_allowed_while_playing: false,
+    post_trial_gap: 1000
+    };
+    timeline.push(instructions12);
+    
+    var instructions13 = {
+    type: 'audio-keyboard-response',
+    stimulus: 'sound/FJavanSF.wav',
+    response_allowed_while_playing: false,
+    trial_duration: 2000,
+    };
+    timeline.push(instructions13);
+    
+    var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+    
+    var first_block = {
+    type: 'survey-multi-choice',
+    questions: [
+    {prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+    ],
+    };
+    timeline.push(first_block);
+
+    var instructions12 = {
+        type: 'audio-button-response',
+        stimulus: 'sound/ProjaSF.wav',
+        choices: ['Pusti ponovo'],
+        response_allowed_while_playing: false,
+        post_trial_gap: 1000
+        };
+        timeline.push(instructions12);
+        
+        var instructions13 = {
+        type: 'audio-keyboard-response',
+        stimulus: 'sound/ProjaSF.wav',
+        response_allowed_while_playing: false,
+        trial_duration: 2000,
+        };
+        timeline.push(instructions13);
+        
+        var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+        
+        var first_block = {
+        type: 'survey-multi-choice',
+        questions: [
+        {prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+        ],
+        };
+        timeline.push(first_block);
+
+        var instructions12 = {
+            type: 'audio-button-response',
+            stimulus: 'sound/TunikaSR.wav',
+            choices: ['Pusti ponovo'],
+            response_allowed_while_playing: false,
+            post_trial_gap: 1000
+            };
+            timeline.push(instructions12);
+            
+            var instructions13 = {
+            type: 'audio-keyboard-response',
+            stimulus: 'sound/TunikaSR.wav',
+            response_allowed_while_playing: false,
+            trial_duration: 2000,
+            };
+            timeline.push(instructions13);
+            
+            var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+            
+            var first_block = {
+            type: 'survey-multi-choice',
+            questions: [
+            {prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+            ],
+            };
+            timeline.push(first_block);
+
+            var instructions12 = {
+                type: 'audio-button-response',
+                stimulus: 'sound/SolidanSF.wav',
+                choices: ['Pusti ponovo'],
+                response_allowed_while_playing: false,
+                post_trial_gap: 1000
+                };
+                timeline.push(instructions12);
+                
+                var instructions13 = {
+                type: 'audio-keyboard-response',
+                stimulus: 'sound/SolidanSF.wav',
+                response_allowed_while_playing: false,
+                trial_duration: 2000,
+                };
+                timeline.push(instructions13);
+                
+                var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+                
+                var first_block = {
+                type: 'survey-multi-choice',
+                questions: [
+                {prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+                ],
+                };
+                timeline.push(first_block);
+              
+              
+                var instructions12 = {
+                    type: 'audio-button-response',
+                    stimulus: 'sound/FMalinaLR.wav',
+                    choices: ['Pusti ponovo'],
+                    response_allowed_while_playing: false,
+                    post_trial_gap: 1000
+                    };
+                    timeline.push(instructions12);
+                    
+                    var instructions13 = {
+                    type: 'audio-keyboard-response',
+                    stimulus: 'sound/FMalinaLR.wav',
+                    response_allowed_while_playing: false,
+                    trial_duration: 2000,
+                    };
+                    timeline.push(instructions13);
+                    
+                    var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+                    
+                    var first_block = {
+                    type: 'survey-multi-choice',
+                    questions: [
+                    {prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+                    ],
+                    };
+                    timeline.push(first_block);
+
+                    var instructions12 = {
+                        type: 'audio-button-response',
+                        stimulus: 'sound/LinijaLR.wav',
+                        choices: ['Pusti ponovo'],
+                        response_allowed_while_playing: false,
+                        post_trial_gap: 1000
+                        };
+                        timeline.push(instructions12);
+                        
+                        var instructions13 = {
+                        type: 'audio-keyboard-response',
+                        stimulus: 'sound/LinijaLR.wav',
+                        response_allowed_while_playing: false,
+                        trial_duration: 2000,
+                        };
+                        timeline.push(instructions13);
+                        
+                        var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+                        
+                        var first_block = {
+                        type: 'survey-multi-choice',
+                        questions: [
+                        {prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+                        ],
+                        };
+                        timeline.push(first_block);
+
+                        var instructions12 = {
+                            type: 'audio-button-response',
+                            stimulus: 'sound/MirisLF.wav',
+                            choices: ['Pusti ponovo'],
+                            response_allowed_while_playing: false,
+                            post_trial_gap: 1000
+                            };
+                            timeline.push(instructions12);
+                            
+                            var instructions13 = {
+                            type: 'audio-keyboard-response',
+                            stimulus: 'sound/MirisLF.wav',
+                            response_allowed_while_playing: false,
+                            trial_duration: 2000,
+                            };
+                            timeline.push(instructions13);
+                            
+                            var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+                            
+                            var first_block = {
+                            type: 'survey-multi-choice',
+                            questions: [
+                            {prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+                            ],
+                            };
+                            timeline.push(first_block);
+
+                            var instructions12 = {
+                                type: 'audio-button-response',
+                                stimulus: 'sound/FKumaSR.wav',
+                                choices: ['Pusti ponovo'],
+                                response_allowed_while_playing: false,
+                                post_trial_gap: 1000
+                                };
+                                timeline.push(instructions12);
+                                
+                                var instructions13 = {
+                                type: 'audio-keyboard-response',
+                                stimulus: 'sound/FKumaSR.wav',
+                                response_allowed_while_playing: false,
+                                trial_duration: 2000,
+                                };
+                                timeline.push(instructions13);
+                                
+                                var options = ["dugosilazni", "dugouzlazni", "kratkosilazni", "kratkouzlazni"];
+                                
+                                var first_block = {
+                                type: 'survey-multi-choice',
+                                questions: [
+                                {prompt: "Izaberite jedan odgovor", options: options, required:true}, 
+                                ],
+                                };
+                                timeline.push(first_block);
+       
+        var block0 = {
+    type: 'survey-text',
+    questions: [
+      {prompt: '<p>Èestitamo! Završili ste eksperiment! Hvala vam na uèestvovanju.</p>'+
+'<p>Ukoliko ste primetili nešto dok ste radili eksperiment, ili ukoliko želite da prokomentarišete nešto o eksperimentu (npr. strategije koje ste koristili da biste odgovorili na pitanja, ili probleme koje ste imali, šta vam je bilo lako/teško, itd.), slobodno napišite u polju.</p>', placeholder: 'Eksperiment je jako zanimljiv...', rows:10, columns: 50}
+    ]
+        };
+   timeline.push(block0);
+   
+
+        
+      var block = {
+    type: 'html-keyboard-response',
+    choices: ['n'], 
+    stimulus: '<p>Pritisnite "n" da biste završili eksperiment.</p>',
+    stimulus_width: 300,
+    on_finish: function(data) {
+      if (jsPsych.pluginAPI.compareKeys(data.response, 'n')) {
+        jsPsych.endExperiment('Uspešno ste završili eksperiment. Možete izaæi.');
+      }
+    }
+        };
+   timeline.push(block);
+  
+    
+        jsPsych.init({
+            timeline: timeline,
+            preload_audio: all_audio,
+            show_preload_progress_bar: true,
+            message_progress_bar: "Kako napredujem",
+            show_progress_bar: true,
+            use_webaudio: false,
+            case_sensitive_responses: true,
+        })
